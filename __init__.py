@@ -9,7 +9,7 @@ md_version = "0.6.0"
 md_name = "X Window Switcher"
 md_description = "Switch X11 Windows"
 md_license = "MIT"
-md_url = "https://github.com/albertlauncher/python/tree/main/x_window_switcher"
+md_url = "https://github.com/albertlauncher/albert-plugin-python-x-window-switcher"
 md_bin_dependencies = "wmctrl"
 md_authors = ["Ed Perez", "Manuel S.", "dshoreman", "nopsqi"]
 
