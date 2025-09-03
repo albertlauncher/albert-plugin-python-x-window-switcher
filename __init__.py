@@ -33,6 +33,7 @@ class Plugin(PluginInstance, TriggerQueryHandler):
         return 'w '
 
     def handleTriggerQuery(self, query):
+        results = []
         try:
             for line in subprocess.check_output(['wmctrl', '-l', '-x']).splitlines():
                 win = Window(*parseWindow(line))
@@ -44,7 +45,7 @@ class Plugin(PluginInstance, TriggerQueryHandler):
 
                 m = Matcher(query.string)
                 if not query.string or m.match(win_instance + ' ' + win_class + ' ' + win.wm_name):
-                    query.add(StandardItem(
+                    results.append(StandardItem(
                         id="%s%s" % (md_name, win.wm_class),
                         iconUrls=["xdg:%s" % win_instance],
                         text="%s  - Desktop %s" % (win_class.replace('-', ' '), win.desktop),
@@ -61,7 +62,7 @@ class Plugin(PluginInstance, TriggerQueryHandler):
                     ))
         except subprocess.CalledProcessError as e:
             warning(f"Error executing wmctrl: {str(e)}")
-
+        query.add(results)
 
 def parseWindow(line):
     win_id, desktop, rest = line.decode().split(None, 2)
