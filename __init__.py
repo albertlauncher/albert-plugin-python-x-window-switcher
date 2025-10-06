@@ -4,7 +4,7 @@ import subprocess
 from collections import namedtuple
 from albert import *
 
-md_iid = "3.0"
+md_iid = "4.0"
 md_version = "0.7"
 md_name = "X Window Switcher"
 md_description = "Switch X11 Windows"
@@ -46,7 +46,7 @@ class Plugin(PluginInstance, TriggerQueryHandler):
                 if not query.string or m.match(win_instance + ' ' + win_class + ' ' + win.wm_name):
                     query.add(StandardItem(
                         id="%s%s" % (md_name, win.wm_class),
-                        iconUrls=["xdg:%s" % win_instance],
+                        iconFactory=lambda w_inst=win_instance: makeThemeIcon(w_inst),
                         text="%s  - Desktop %s" % (win_class.replace('-', ' '), win.desktop),
                         subtext=win.wm_name,
                         actions=[Action("switch",
