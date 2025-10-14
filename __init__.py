@@ -46,7 +46,7 @@ class Plugin(PluginInstance, TriggerQueryHandler):
                 if not query.string or m.match(win_instance + ' ' + win_class + ' ' + win.wm_name):
                     query.add(StandardItem(
                         id="%s%s" % (md_name, win.wm_class),
-                        iconFactory=lambda w_inst=win_instance: makeThemeIcon(w_inst),
+                        icon_factory=lambda w_inst=win_instance: makeThemeIcon(w_inst),
                         text="%s  - Desktop %s" % (win_class.replace('-', ' '), win.desktop),
                         subtext=win.wm_name,
                         actions=[Action("switch",
