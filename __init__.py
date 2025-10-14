@@ -5,7 +5,7 @@ from collections import namedtuple
 from albert import *
 
 md_iid = "4.0"
-md_version = "0.7"
+md_version = "0.7.1"
 md_name = "X Window Switcher"
 md_description = "Switch X11 Windows"
 md_license = "MIT"
