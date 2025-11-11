@@ -4,7 +4,7 @@ import subprocess
 from collections import namedtuple
 from albert import *
 
-md_iid = "4.0"
+md_iid = "5.0"
 md_version = "0.7.1"
 md_name = "X Window Switcher"
 md_description = "Switch X11 Windows"
@@ -16,10 +16,10 @@ md_authors = ["@edjoperez", "@ManuelSchneid3r", "@dshoreman", "@nopsqi"]
 Window = namedtuple("Window", ["wid", "desktop", "wm_class", "host", "wm_name"])
 
 
-class Plugin(PluginInstance, TriggerQueryHandler):
+class Plugin(PluginInstance, RankedQueryHandler):
     def __init__(self):
         PluginInstance.__init__(self)
-        TriggerQueryHandler.__init__(self)
+        RankedQueryHandler.__init__(self)
 
         # Check for X session and wmctrl availability
         try:
@@ -32,7 +32,9 @@ class Plugin(PluginInstance, TriggerQueryHandler):
     def defaultTrigger(self):
         return 'w '
 
-    def handleTriggerQuery(self, query):
+    def rankItems(self, ctx):
+        rank_items = []
+
         try:
             for line in subprocess.check_output(['wmctrl', '-l', '-x']).splitlines():
                 win = Window(*parseWindow(line))
@@ -42,25 +44,33 @@ class Plugin(PluginInstance, TriggerQueryHandler):
 
                 win_instance, win_class = win.wm_class.replace(' ', '-').split('.', 1)
 
-                m = Matcher(query.string)
-                if not query.string or m.match(win_instance + ' ' + win_class + ' ' + win.wm_name):
-                    query.add(StandardItem(
-                        id="%s%s" % (md_name, win.wm_class),
-                        icon_factory=lambda w_inst=win_instance: makeThemeIcon(w_inst),
-                        text="%s  - Desktop %s" % (win_class.replace('-', ' '), win.desktop),
-                        subtext=win.wm_name,
-                        actions=[Action("switch",
-                                        "Switch Window",
-                                        lambda w=win: runDetachedProcess(["wmctrl", '-i', '-a', w.wid])),
-                                Action("move",
-                                        "Move window to this desktop",
-                                        lambda w=win: runDetachedProcess(["wmctrl", '-i', '-R', w.wid])),
-                                Action("close",
-                                        "Close the window gracefully.",
-                                        lambda w=win: runDetachedProcess(["wmctrl", '-c', w.wid]))]
-                    ))
+                matcher = Matcher(ctx.query)
+                if m := matcher.match(win_instance + ' ' + win_class + ' ' + win.wm_name):
+                    rank_items.append(
+                        RankItem(
+                            StandardItem(
+                                id="%s%s" % (md_name, win.wm_class),
+                                icon_factory=lambda w_inst=win_instance: makeThemeIcon(w_inst),
+                                text="%s  - Desktop %s" % (win_class.replace('-', ' '), win.desktop),
+                                subtext=win.wm_name,
+                                actions=[Action("switch",
+                                                "Switch Window",
+                                                lambda w=win: runDetachedProcess(["wmctrl", '-i', '-a', w.wid])),
+                                         Action("move",
+                                                "Move window to this desktop",
+                                                lambda w=win: runDetachedProcess(["wmctrl", '-i', '-R', w.wid])),
+                                         Action("close",
+                                                "Close the window gracefully.",
+                                                lambda w=win: runDetachedProcess(["wmctrl", '-c', w.wid]))]
+                            ),
+                            m
+                        )
+                    )
+
         except subprocess.CalledProcessError as e:
             warning(f"Error executing wmctrl: {str(e)}")
+
+        return rank_items
 
 
 def parseWindow(line):
