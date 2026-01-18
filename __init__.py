@@ -12,6 +12,7 @@ md_license = "MIT"
 md_url = "https://github.com/albertlauncher/albert-plugin-python-x-window-switcher"
 md_bin_dependencies = ["wmctrl"]
 md_authors = ["@edjoperez", "@ManuelSchneid3r", "@dshoreman", "@nopsqi"]
+md_maintainers = ["@ronskons"]
 
 Window = namedtuple("Window", ["wid", "desktop", "wm_class", "host", "wm_name"])
 
