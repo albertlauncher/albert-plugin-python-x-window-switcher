@@ -50,7 +50,7 @@ class Plugin(PluginInstance, RankedQueryHandler):
                         RankItem(
                             StandardItem(
                                 id="%s%s" % (md_name, win.wm_class),
-                                icon_factory=lambda w_inst=win_instance: makeThemeIcon(w_inst),
+                                icon_factory=lambda w_inst=win_instance: Icon.theme(w_inst),
                                 text="%s  - Desktop %s" % (win_class.replace('-', ' '), win.desktop),
                                 subtext=win.wm_name,
                                 actions=[Action("switch",
