@@ -4,7 +4,7 @@ import subprocess
 from collections import namedtuple
 from albert import *
 
-md_iid = "5.0"
+md_iid = "6.0"
 md_version = "0.7.2"
 md_name = "X Window Switcher"
 md_description = "Switch X11 Windows"
@@ -17,10 +17,10 @@ md_maintainers = ["@ronskons"]
 Window = namedtuple("Window", ["wid", "desktop", "wm_class", "host", "wm_name"])
 
 
-class Plugin(PluginInstance, RankedQueryHandler):
+class Plugin(PluginInstance, GeneratorQueryHandler):
     def __init__(self):
         PluginInstance.__init__(self)
-        RankedQueryHandler.__init__(self)
+        GeneratorQueryHandler.__init__(self)
 
         # Check for X session and wmctrl availability
         try:
@@ -33,7 +33,7 @@ class Plugin(PluginInstance, RankedQueryHandler):
     def defaultTrigger(self):
         return 'w '
 
-    def rankItems(self, ctx):
+    def items(self, ctx):
         rank_items = []
 
         try:
@@ -71,7 +71,7 @@ class Plugin(PluginInstance, RankedQueryHandler):
         except subprocess.CalledProcessError as e:
             warning(f"Error executing wmctrl: {str(e)}")
 
-        return rank_items
+        yield from self.lazySort(rank_items)
 
 
 def parseWindow(line):
