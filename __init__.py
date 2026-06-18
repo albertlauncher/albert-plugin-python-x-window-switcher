@@ -71,7 +71,7 @@ class Plugin(PluginInstance, GeneratorQueryHandler):
         except subprocess.CalledProcessError as e:
             warning(f"Error executing wmctrl: {str(e)}")
 
-        yield from self.lazySort(rank_items)
+        yield from self.lazySort(rank_items, ctx.usage_scoring)
 
 
 def parseWindow(line):
